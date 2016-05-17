@@ -11,9 +11,9 @@ export default class TableRow extends Component {
 		let { username, pID, highScore } = this.props
 		return (
 			<tr className='table-row'>
-				<td>${username}</td>
-				<td>${pID}</td>
-				<td>${highScore}</td>
+				<td>{username}</td>
+				<td>{pID}</td>
+				<td>{highScore}</td>
 			</tr>
 		)
 	}
