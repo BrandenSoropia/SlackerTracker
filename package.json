@@ -1,0 +1,40 @@
+{
+  "name": "slacker-tracker",
+  "version": "1.0.0",
+  "description": "A short game that tracks how many clicks you can get within a time limit.",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha ./public/test/.setup.js ./public/test/**/*-test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrandenSoropia/SlackerTracker.git"
+  },
+  "author": "Branden Soropia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BrandenSoropia/SlackerTracker/issues"
+  },
+  "homepage": "https://github.com/BrandenSoropia/SlackerTracker#readme",
+  "dependencies": {
+    "express": "^4.13.4",
+    "pg-promise": "^4.2.0",
+    "react": "^15.0.2",
+    "react-dom": "^15.0.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.9.0",
+    "babel-loader": "^6.2.4",
+    "babel-preset-es2015": "^6.6.0",
+    "babel-preset-react": "^6.5.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "babel-register": "^6.8.0",
+    "chai": "^3.5.0",
+    "enzyme": "^2.3.0",
+    "jsdom": "^9.1.0",
+    "mocha": "^2.4.5",
+    "react-addons-test-utils": "^15.0.2",
+    "react-dom": "^15.0.2",
+    "webpack": "^1.13.0"
+  }
+}
