@@ -12,12 +12,14 @@ import TableRow from '../components/TableRow'
 
 	render () {
 		let tableRowsContainingPlayerInfo = []
-
-		for (let i = 1; i <= this.props.players.length; i++) {
-			let { username, pID, highScore } = this.props.players[i - 1]
-			tableRowsContainingPlayerInfo.push(<TableRow key={i} username={username} pID={pID} highScore={highScore} />)
+		
+		if (tableRowsContainingPlayerInfo.length != 0) {
+			for (let i = 1; i <= this.props.players.length; i++) {
+				let { username, pID, highScore } = this.props.players[i - 1]
+				tableRowsContainingPlayerInfo.push(<TableRow key={i} username={username} pID={pID} highScore={highScore} />)
+			}	
 		}
-
+		
 		return (
 			<table className='table'>
 				<TableHeader key={0} usernameColumn='username' pIDColumn='pID' highScoreColumn='High Score' />
@@ -33,6 +35,6 @@ import TableRow from '../components/TableRow'
 
 Table.propTypes = {
 	players: React.PropTypes.arrayOf(React.PropTypes.object)
-}
+} 
 
 // export default Table

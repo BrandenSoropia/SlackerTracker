@@ -1,8 +1,14 @@
 'use strict'
 
+const MAX_LEADERBOARD_PLAYERS_TO_DISPLAY = 2
+
 const express = require('express')
 const app = express() 
 const pgp = require('pg-promise')()
+
+var bodyParser = require('body-parser');
+var multer = require('multer'); // v1.0.5
+var upload = multer(); // for parsing multipart/form-data
 
 const PORT = 3000 
 const databaseConnection = 'postgres://localhost:5432/'
@@ -10,33 +16,56 @@ const databaseConnection = 'postgres://localhost:5432/'
 const db = pgp(databaseConnection)
 const serverTimeRecorder = new Date()
 
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(express.static('public'))
 
-function displayAllPlayers (res) {
-	db.any('SELECT username, highScore FROM player ORDER BY highScore ASC LIMIT 2')
+function countTotalPlayers () {
+	db.one('SELECT COUNT(username) FROM player')
+	.then (function (totalPlayers) {
+		console.log(`Currently ${totalPlayers} users signed up`)
+		return totalPlayers
+	})
+	.catch (function (error) {
+		console.log(error)
+	})
+}
+
+function displayNumPlayers (res, numPlayers) {
+	db.any('SELECT username, highScore FROM player ORDER BY highScore ASC LIMIT $1', [numPlayers])
 		.then (function (allPlayersandHighscores) {
 			// console.log('test')
-			console.log(allPlayersandHighscores)
-			res.json(allPlayersandHighscores)
+			// console.log(allPlayersandHighscores)
+			res.json({ leaderboard: allPlayersandHighscores})
 		})
 		.catch (function (error) {
 			console.log(`Error: ${error}`)
 		})
 }
 
+app.post('/test-body-parser', (req, res, err) => {
+	console.log(req.body)
+  res.json(req.body)
+})
+
+app.get('/get-all-players', (req, res, err) => {
+	console.log('Get All Players')
+	displayNumPlayers(res, countTotalPlayers())
+})
+
 app.get('/get-leaderboard', (req, res, err) => {
-	console.log('accessed \'/\'')
-	// console.log('testing get')
-	displayAllPlayers(res)
+	console.log('Get Leaderboard')
+	displayNumPlayers(res, MAX_LEADERBOARD_PLAYERS_TO_DISPLAY)
 	// res.sendFile('/public/index.html')
 })
 
 app.post('/create-account', (req, res, err) => {
+	console.log('Create Account')
 	db.none('INSERT INTO player (pID, username, password) VALUES ((SELECT COUNT(username) FROM player), $1, $2)',
 		[req.query.username, req.query.password])
 	.then (function () {
 		console.log(`Created account for ${req.query.username}`)
-		displayAllPlayers(res)
+		displayNumPlayers(res, MAX_LEADERBOARD_PLAYERS_TO_DISPLAY)
 	})
 	.catch (function (error) {
 		console.log(error)
@@ -44,6 +73,7 @@ app.post('/create-account', (req, res, err) => {
 })
 
 app.post('/find-user', (req, res, err) => {
+	console.log('Find User')
 	db.one('SELECT username, highScore FROM player WHERE username=$1', [req.query.username])
 	.then (function (foundUserInfo) {
 		res.json(foundUserInfo)
@@ -54,10 +84,11 @@ app.post('/find-user', (req, res, err) => {
 })
 
 app.post('/delete-user', (req, res, err) => {
+	console.log('Delete User')
 	db.none('DELETE FROM player WHERE username=$1 AND password=$2', [req.query.username, req.query.password])
 	.then (function () {
 		console.log(`Deleted user ${req.query.username}`)
-		displayAllPlayers(res)
+		displayNumPlayers(res, MAX_LEADERBOARD_PLAYERS_TO_DISPLAY)
 	})
 	.catch (function (error) {
 		console.log(error)
@@ -65,10 +96,11 @@ app.post('/delete-user', (req, res, err) => {
 })
 
 app.post('/update-highscore', (req, res, err) => {
+	console.log('Update Highscore')
 	db.none('UPDATE player SET highScore=$1 WHERE username=$2', [req.query.newScore, req.query.username])
 	.then (function () {
 		console.log(`Updated ${req.query.username}\'s score to ${req.query.newScore}`)
-		displayAllPlayers(res)
+		displayNumPlayers(res, MAX_LEADERBOARD_PLAYERS_TO_DISPLAY)
 	})
 	.catch (function (error) {
 		console.log(error)

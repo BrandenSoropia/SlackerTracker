@@ -1,9 +1,10 @@
 'use strict'
 
-const GET_ALL_PLAYERS = 'GET_ALL_PLAYERS'
+export const UPDATE_LEADERBOARD = 'UPDATE_LEADERBOARD'
 
-function getAllPlayers() {
+export function updateLeaderboard ({ leaderboard }) {
 	return {
-		type: GET_ALL_PLAYERS
+		type: UPDATE_LEADERBOARD,
+		leaderboard: leaderboard
 	}
 }
