@@ -18,3 +18,9 @@ export default class TableRow extends Component {
 		)
 	}
 }
+
+TableRow.propTypes = {
+	username: React.PropTypes.string.isRequired,
+	pID: React.PropTypes.number.isRequired,
+	highScore: React.PropTypes.number.isRequired
+}

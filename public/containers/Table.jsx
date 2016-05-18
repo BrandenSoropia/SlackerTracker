@@ -6,19 +6,9 @@ import TableRow from '../components/TableRow'
 
  export default class Table extends Component {
 
- // 	static propTypes = {
-	// 	players: React.PropTypes.arrayOf(React.PropTypes.object)
-	// }
-
 	constructor (props) {
 		super(props)
 	}
-
-	// static defaultProps = {
-	// 		players: [],
-	// }
-
-
 
 	render () {
 		let tableRowsContainingPlayerInfo = []
@@ -39,6 +29,10 @@ import TableRow from '../components/TableRow'
 			</table>
 		)
 	}
+}
+
+Table.propTypes = {
+	players: React.PropTypes.arrayOf(React.PropTypes.object)
 }
 
 // export default Table

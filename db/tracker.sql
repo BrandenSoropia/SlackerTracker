@@ -1,6 +1,9 @@
 DROP DATABASE IF EXISTS tracker;
 CREATE DATABASE tracker;
 
+DROP SCHEMA IF EXISTS tracker CASCADE;
+CREATE SCHEMA tracker;
+
 DROP TABLE IF EXISTS player;
 
 SET search_path TO player, public;

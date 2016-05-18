@@ -19,3 +19,9 @@ export default class TableHeader extends Component {
 		)
 	}
 }
+
+TableHeader.propTypes = {
+	usernameColumn: React.PropTypes.string.isRequired,
+	pIDColumn: React.PropTypes.string.isRequired,
+	highScoreColumn: React.PropTypes.string.isRequired
+}

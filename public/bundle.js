@@ -20195,19 +20195,11 @@
 	var Table = function (_Component) {
 		_inherits(Table, _Component);
 
-		// 	static propTypes = {
-		// 	players: React.PropTypes.arrayOf(React.PropTypes.object)
-		// }
-
 		function Table(props) {
 			_classCallCheck(this, Table);
 
 			return _possibleConstructorReturn(this, Object.getPrototypeOf(Table).call(this, props));
 		}
-
-		// static defaultProps = {
-		// 		players: [],
-		// }
 
 		_createClass(Table, [{
 			key: 'render',
@@ -20239,10 +20231,14 @@
 		return Table;
 	}(_react.Component);
 
-	// export default Table
-
-
 	exports.default = Table;
+
+
+	Table.propTypes = {
+		players: _react2.default.PropTypes.arrayOf(_react2.default.PropTypes.object)
+	};
+
+	// export default Table
 
 /***/ },
 /* 169 */
@@ -20316,6 +20312,13 @@
 
 	exports.default = TableHeader;
 
+
+	TableHeader.propTypes = {
+		usernameColumn: _react2.default.PropTypes.string.isRequired,
+		pIDColumn: _react2.default.PropTypes.string.isRequired,
+		highScoreColumn: _react2.default.PropTypes.string.isRequired
+	};
+
 /***/ },
 /* 170 */
 /***/ function(module, exports, __webpack_require__) {
@@ -20383,6 +20386,13 @@
 	}(_react.Component);
 
 	exports.default = TableRow;
+
+
+	TableRow.propTypes = {
+		username: _react2.default.PropTypes.string.isRequired,
+		pID: _react2.default.PropTypes.number.isRequired,
+		highScore: _react2.default.PropTypes.number.isRequired
+	};
 
 /***/ }
 /******/ ]);
