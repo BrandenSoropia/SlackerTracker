@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
-import { createStore } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
 import { updateLeaderboard, initializeLeaderboard } from './actions/actions'
 import tableHandler from './reducers/reducer'
 import Table from './containers/Table'
@@ -9,7 +10,7 @@ import Table from './containers/Table'
 // const onePlayer = { leaderboard: [{username: 'tigur01', pID: 0, highScore: 5}] }
 
 // let store = createStore(tableHandler, onePlayer)
-let store = createStore(tableHandler)
+let store = createStore(tableHandler, applyMiddleware(thunk))
 
 console.log(store.getState())
 

@@ -58,6 +58,10 @@
 
 	var _redux = __webpack_require__(175);
 
+	var _reduxThunk = __webpack_require__(195);
+
+	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
+
 	var _actions = __webpack_require__(190);
 
 	var _reducer = __webpack_require__(191);
@@ -73,7 +77,7 @@
 	// const onePlayer = { leaderboard: [{username: 'tigur01', pID: 0, highScore: 5}] }
 
 	// let store = createStore(tableHandler, onePlayer)
-	var store = (0, _redux.createStore)(_reducer2.default);
+	var store = (0, _redux.createStore)(_reducer2.default, (0, _redux.applyMiddleware)(_reduxThunk2.default));
 
 	console.log(store.getState());
 
@@ -22051,6 +22055,34 @@
 		pid: _react2.default.PropTypes.number.isRequired,
 		highscore: _react2.default.PropTypes.number.isRequired
 	};
+
+/***/ },
+/* 195 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	exports.__esModule = true;
+	function createThunkMiddleware(extraArgument) {
+	  return function (_ref) {
+	    var dispatch = _ref.dispatch;
+	    var getState = _ref.getState;
+	    return function (next) {
+	      return function (action) {
+	        if (typeof action === 'function') {
+	          return action(dispatch, getState, extraArgument);
+	        }
+
+	        return next(action);
+	      };
+	    };
+	  };
+	}
+
+	var thunk = createThunkMiddleware();
+	thunk.withExtraArgument = createThunkMiddleware;
+
+	exports['default'] = thunk;
 
 /***/ }
 /******/ ]);
