@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
-import { updateLeaderboard, initializeLeaderboard } from './actions/actions'
 import tableHandler from './reducers/reducer'
-import Table from './containers/Table'
+import { updateLeaderboard, initializeLeaderboard } from './actions/actions'
+import App from './containers/App'
 
 // const onePlayer = { leaderboard: [{username: 'tigur01', pID: 0, highScore: 5}] }
 
@@ -28,7 +28,7 @@ $.ajax({
 
 		ReactDOM.render(
 			<Provider store={store}>
-				<Table />
+				<App />
 			</Provider>,
 			document.getElementById('container')
 		)

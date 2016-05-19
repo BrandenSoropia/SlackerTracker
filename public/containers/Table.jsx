@@ -1,7 +1,6 @@
 'use strict'
 
 import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
 import TableHeader from '../components/TableHeader'
 import TableRow from '../components/TableRow'
 
@@ -43,15 +42,5 @@ import TableRow from '../components/TableRow'
 Table.propTypes = {
 	leaderboard: React.PropTypes.arrayOf(React.PropTypes.object)
 } 
-
-const mapStateToProps = (state) => {
-	return {
-		leaderboard: state.leaderboard
-	}
-}
-
-export default connect(
-	mapStateToProps
-)(Table)
 
 // export default Table
