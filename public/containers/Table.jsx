@@ -1,6 +1,7 @@
 'use strict'
 
 import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
 import TableHeader from '../components/TableHeader'
 import TableRow from '../components/TableRow'
 
@@ -11,18 +12,24 @@ import TableRow from '../components/TableRow'
 	}
 
 	render () {
+		console.log('Rendering Table with props:')
+		console.log(this.props)
+
 		let tableRowsContainingPlayerInfo = []
 		
-		if (tableRowsContainingPlayerInfo.length != 0) {
-			for (let i = 1; i <= this.props.players.length; i++) {
-				let { username, pID, highScore } = this.props.players[i - 1]
-				tableRowsContainingPlayerInfo.push(<TableRow key={i} username={username} pID={pID} highScore={highScore} />)
+		// if (tableRowsContainingPlayerInfo.length != 0) {
+			for (let i = 1; i <= this.props.leaderboard.length; i++) {
+				let { username, pid, highscore } = this.props.leaderboard[i - 1]
+				tableRowsContainingPlayerInfo.push(<TableRow key={i} username={username} pid={pid} highscore={highscore} />)
 			}	
-		}
+		// }
 		
+		console.log('Rows to render')
+		console.log(tableRowsContainingPlayerInfo)
+
 		return (
 			<table className='table'>
-				<TableHeader key={0} usernameColumn='username' pIDColumn='pID' highScoreColumn='High Score' />
+				<TableHeader key={0} usernameColumn='username' pIDColumn='pid' highScoreColumn='highscore' />
 				<tbody>
 					{
 						tableRowsContainingPlayerInfo
@@ -34,7 +41,17 @@ import TableRow from '../components/TableRow'
 }
 
 Table.propTypes = {
-	players: React.PropTypes.arrayOf(React.PropTypes.object)
+	leaderboard: React.PropTypes.arrayOf(React.PropTypes.object)
 } 
+
+const mapStateToProps = (state) => {
+	return {
+		leaderboard: state.leaderboard
+	}
+}
+
+export default connect(
+	mapStateToProps
+)(Table)
 
 // export default Table

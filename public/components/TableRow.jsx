@@ -8,12 +8,12 @@ export default class TableRow extends Component {
 	}
 
 	render () {
-		let { username, pID, highScore } = this.props
+		let { username, pid, highscore } = this.props
 		return (
 			<tr className='table-row'>
 				<td>{username}</td>
-				<td>{pID}</td>
-				<td>{highScore}</td>
+				<td>{pid}</td>
+				<td>{highscore}</td>
 			</tr>
 		)
 	}
@@ -21,6 +21,6 @@ export default class TableRow extends Component {
 
 TableRow.propTypes = {
 	username: React.PropTypes.string.isRequired,
-	pID: React.PropTypes.number.isRequired,
-	highScore: React.PropTypes.number.isRequired
+	pid: React.PropTypes.number.isRequired,
+	highscore: React.PropTypes.number.isRequired
 }

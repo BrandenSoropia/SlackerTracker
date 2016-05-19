@@ -32,7 +32,7 @@ function countTotalPlayers () {
 }
 
 function displayNumPlayers (res, numPlayers) {
-	db.any('SELECT username, highScore FROM player ORDER BY highScore ASC LIMIT $1', [numPlayers])
+	db.any('SELECT username, pid, highscore FROM player ORDER BY highscore ASC LIMIT $1', [numPlayers])
 		.then (function (allPlayersandHighscores) {
 			// console.log('test')
 			// console.log(allPlayersandHighscores)
@@ -61,7 +61,7 @@ app.get('/get-leaderboard', (req, res, err) => {
 
 app.post('/create-account', (req, res, err) => {
 	console.log('Create Account')
-	db.none('INSERT INTO player (pID, username, password) VALUES ((SELECT COUNT(username) FROM player), $1, $2)',
+	db.none('INSERT INTO player (pid, username, password) VALUES ((SELECT COUNT(username) FROM player), $1, $2)',
 		[req.query.username, req.query.password])
 	.then (function () {
 		console.log(`Created account for ${req.query.username}`)
@@ -74,7 +74,7 @@ app.post('/create-account', (req, res, err) => {
 
 app.post('/find-user', (req, res, err) => {
 	console.log('Find User')
-	db.one('SELECT username, highScore FROM player WHERE username=$1', [req.query.username])
+	db.one('SELECT username, highscore FROM player WHERE username=$1', [req.query.username])
 	.then (function (foundUserInfo) {
 		res.json(foundUserInfo)
 	})
@@ -97,7 +97,7 @@ app.post('/delete-user', (req, res, err) => {
 
 app.post('/update-highscore', (req, res, err) => {
 	console.log('Update Highscore')
-	db.none('UPDATE player SET highScore=$1 WHERE username=$2', [req.query.newScore, req.query.username])
+	db.none('UPDATE player SET highscore=$1 WHERE username=$2', [req.query.newScore, req.query.username])
 	.then (function () {
 		console.log(`Updated ${req.query.username}\'s score to ${req.query.newScore}`)
 		displayNumPlayers(res, MAX_LEADERBOARD_PLAYERS_TO_DISPLAY)

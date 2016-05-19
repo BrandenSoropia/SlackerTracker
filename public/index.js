@@ -2,45 +2,27 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
-import { connect } from 'react-redux'
-import { updateLeaderboard } from './actions/actions'
-import trackerApp from './reducers/reducer'
+import { updateLeaderboard, initializeLeaderboard } from './actions/actions'
+import tableHandler from './reducers/reducer'
 import Table from './containers/Table'
 
-const onePlayer = [{username: 'tigur01', pID: 1, highScore: 5}]
+// const onePlayer = { leaderboard: [{username: 'tigur01', pID: 0, highScore: 5}] }
 
-// ReactDOM.render(
-// 	<Table players={onePlayer} />,
-// 	document.getElementById('container')
-// )
+// let store = createStore(tableHandler, onePlayer)
+let store = createStore(tableHandler)
 
-// (dispatch) => {
-
-// }
+console.log(store.getState())
 
 $.ajax({
 	method: 'GET',
-	url: 'http://localhost:3000/get-leaderboard',
+	url: 'http://localhost:3000/get-all-players',
 	success: function(data) {
-		console.log('Recieved form server')
+		console.log('Recieved data from server')
 		console.log(data)
 
-		let initialState = []
-		initialState.push(data.leaderboard)
+		store.dispatch(initializeLeaderboard(data))
 
-		let store = createStore(trackerApp)
-
-		console.log(store.getState())
-
-		// const mapStateToProps = (state) => {
-		// 	players: state.leaderboard
-		// }
-		store.dispatch(updateLeaderboard(data))
-
-		// const table = connect(
-		// 	mapStateToProps
-		// )(Table)
-
+		console.log(`Dispatched update leaderboard with top 2 players from DB`)
 		console.log(store.getState())
 
 		ReactDOM.render(
@@ -49,13 +31,5 @@ $.ajax({
 			</Provider>,
 			document.getElementById('container')
 		)
-
-		// dispatch({type: 'UPDAYE_LEADERBPARD', data: data})
 	}
 })
-
-
-// ReactDOM.render(
-// 	<h1>Hello world!</h1>,
-// 	document.getElementById('container')
-// )

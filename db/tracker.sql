@@ -9,13 +9,13 @@ DROP TABLE IF EXISTS player;
 SET search_path TO player, public;
 
 CREATE TABLE player (
-	pID INTEGER NOT NULL,
+	pid INTEGER NOT NULL,
 	username VARCHAR(25) NOT NULL,
 	password VARCHAR(25) NOT NULL,
-	highScore INTEGER DEFAULT 0,
-	lastPlayed TIMESTAMP DEFAULT NULL,
-	CHECK (pID >= 0),
-	PRIMARY KEY (pID, username)
+	highscore INTEGER DEFAULT 0,
+	lastplayed TIMESTAMP DEFAULT NULL,
+	CHECK (pid >= 0),
+	PRIMARY KEY (pid, username)
 );
 
-INSERT INTO player (pID, username, password) VALUES (0, 'tigur01', 'password');
+-- INSERT INTO player (pid, username, password) VALUES (0, 'tigur01', 'password');
