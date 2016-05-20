@@ -62,13 +62,13 @@
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-	var _reducer = __webpack_require__(199);
+	var _reducer = __webpack_require__(191);
 
 	var _reducer2 = _interopRequireDefault(_reducer);
 
-	var _actions = __webpack_require__(191);
+	var _actions = __webpack_require__(192);
 
-	var _App = __webpack_require__(192);
+	var _App = __webpack_require__(193);
 
 	var _App2 = _interopRequireDefault(_App);
 
@@ -85,13 +85,18 @@
 		method: 'GET',
 		url: 'http://localhost:3000/get-all-players',
 		success: function success(data) {
-			console.log('Recieved data from server');
-			console.log(data);
+			// console.log('Recieved data from server')
+			// console.log(data)
 
 			store.dispatch((0, _actions.initializeLeaderboard)(data));
+			//
+			// console.log(`Dispatched update leaderboard with all players from DB`)
+			// console.log(store.getState())
 
-			console.log('Dispatched update leaderboard with top 2 players from DB');
-			console.log(store.getState());
+			// console.log(`Testing Async`)
+			// store.dispatch(asyncUpdateLeaderboard())
+			// console.log(`Async state`)
+			// console.log(store.getState())
 
 			_reactDom2.default.render(_react2.default.createElement(
 				_reactRedux.Provider,
@@ -100,6 +105,18 @@
 			), document.getElementById('container'));
 		}
 	});
+
+	// works
+	// console.log(`Testing Async update leaderboard`)
+	// 		store.dispatch(asyncUpdateLeaderboard())
+	// 		console.log(`Async state`)
+	// 		console.log(store.getState())
+
+	var TEST_USERNAME = 'testUser';
+	var TEST_PASSWORD = 'testPassword';
+	var TEST_USER_CREDENTIALS = { username: TEST_USERNAME, password: TEST_PASSWORD };
+	console.log('Testing Async delete account');
+	store.dispatch((0, _actions.asyncDeleteAccount)(TEST_USER_CREDENTIALS));
 
 /***/ },
 /* 1 */
@@ -21766,6 +21783,44 @@
 
 /***/ },
 /* 191 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.default = tableHandler;
+
+	var _redux = __webpack_require__(175);
+
+	var _actions = __webpack_require__(192);
+
+	function tableHandler() {
+		var state = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+		var action = arguments[1];
+
+		switch (action.type) {
+			case _actions.INITIALIZE_LEADERBOARD:
+				return Object.assign({}, state, { leaderboard: action.leaderboard });
+			case _actions.UPDATE_LEADERBOARD:
+				return Object.assign({}, state, { leaderboard: state.leaderboard.concat(action.leaderboard) });
+			case _actions.GET_LEADERBOARD:
+			case _actions.RECIEVE_LEADERBOARD:
+				return Object.assign({}, state, { isFetching: action.isFetching });
+			default:
+				return state;
+		}
+	}
+
+	// const trackerApp = combineReducers({
+	// 	tableHandler
+	// })
+
+	// export default trackerApp
+
+/***/ },
+/* 192 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -21776,21 +21831,29 @@
 	exports.getLeaderboard = getLeaderboard;
 	exports.recieveLeaderboard = recieveLeaderboard;
 	exports.initializeLeaderboard = initializeLeaderboard;
+	exports.asyncDeleteAccount = asyncDeleteAccount;
 	exports.updateLeaderboard = updateLeaderboard;
+	exports.asyncUpdateLeaderboard = asyncUpdateLeaderboard;
+	var CREATE_ACCOUNT = exports.CREATE_ACCOUNT = 'CREATE_ACCOUNT';
+
 	var GET_LEADERBOARD = exports.GET_LEADERBOARD = 'GET_LEADERBOARD';
 	var RECIEVE_LEADERBOARD = exports.RECIEVE_LEADERBOARD = 'RECIEVE_LEADERBOARD';
 
 	var INITIALIZE_LEADERBOARD = exports.INITIALIZE_LEADERBOARD = 'INITIALIZE_LEADERBOARD';
 	var UPDATE_LEADERBOARD = exports.UPDATE_LEADERBOARD = 'UPDATE_LEADERBOARD';
 
+	var DELETE_ACCOUNT = exports.DELETE_ACCOUNT = 'DELETE_ACCOUNT';
+
 	function getLeaderboard() {
 		return {
+			type: GET_LEADERBOARD,
 			isFetching: true
 		};
 	}
 
 	function recieveLeaderboard() {
 		return {
+			type: RECIEVE_LEADERBOARD,
 			isFetching: false
 		};
 	}
@@ -21805,18 +21868,59 @@
 		};
 	}
 
-	function updateLeaderboard(_ref2) {
-		var leaderboard = _ref2.leaderboard;
+	function asyncDeleteAccount(_ref2) {
+		var username = _ref2.username;
+		var password = _ref2.password;
+
+		console.log(username);
+		console.log(password);
 
 		return function (dispatch) {
-			console.log('Getting Leaderboard from server');
-			dispatch(getLeaderboard());
-			return;
+			var result = $.ajax({
+				method: 'POST',
+				url: 'http://localhost:3000/find-user',
+				data: { username: username, password: password },
+				success: function success(data) {
+					if (data != null) {
+						console.log('After searching for user here is the result');
+						console.log(data);
+						return dispatch(updateLeaderboard(data));
+					} else {
+						console.log('That account doesn\'t exist or wrong password!');
+					}
+				}
+			});
+
+			result.then(console.log('promise complete!'));
+		};
+	}
+
+	// Original
+	function updateLeaderboard(_ref3) {
+		var leaderboard = _ref3.leaderboard;
+
+		return {
+			type: UPDATE_LEADERBOARD,
+			leaderboard: leaderboard
+		};
+	}
+
+	function asyncUpdateLeaderboard() {
+		return function (dispatch) {
+			$.ajax({
+				method: 'GET',
+				url: 'http://localhost:3000/get-all-players',
+				success: function success(data) {
+					console.log('Recieved all players from server');
+					console.log(data);
+					return dispatch(updateLeaderboard(data));
+				}
+			});
 		};
 	}
 
 /***/ },
-/* 192 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21833,13 +21937,13 @@
 
 	var _reactRedux = __webpack_require__(168);
 
-	var _Table = __webpack_require__(193);
+	var _Table = __webpack_require__(194);
 
 	var _Table2 = _interopRequireDefault(_Table);
 
-	var _InputArea = __webpack_require__(196);
+	var _AccountInputForm = __webpack_require__(197);
 
-	var _InputArea2 = _interopRequireDefault(_InputArea);
+	var _AccountInputForm2 = _interopRequireDefault(_AccountInputForm);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21872,7 +21976,7 @@
 						null,
 						'IGNORE INPUT AREA, DOESN\'T WORK'
 					),
-					_react2.default.createElement(_InputArea2.default, null)
+					_react2.default.createElement(_AccountInputForm2.default, null)
 				);
 			}
 		}]);
@@ -21889,7 +21993,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(App);
 
 /***/ },
-/* 193 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21904,11 +22008,11 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _TableHeader = __webpack_require__(194);
+	var _TableHeader = __webpack_require__(195);
 
 	var _TableHeader2 = _interopRequireDefault(_TableHeader);
 
-	var _TableRow = __webpack_require__(195);
+	var _TableRow = __webpack_require__(196);
 
 	var _TableRow2 = _interopRequireDefault(_TableRow);
 
@@ -21977,7 +22081,7 @@
 	// export default Table
 
 /***/ },
-/* 194 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22056,7 +22160,7 @@
 	};
 
 /***/ },
-/* 195 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22131,55 +22235,6 @@
 	};
 
 /***/ },
-/* 196 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _AccountInputForm = __webpack_require__(197);
-
-	var _AccountInputForm2 = _interopRequireDefault(_AccountInputForm);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var InputArea = function (_Component) {
-		_inherits(InputArea, _Component);
-
-		function InputArea() {
-			_classCallCheck(this, InputArea);
-
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(InputArea).apply(this, arguments));
-		}
-
-		_createClass(InputArea, [{
-			key: 'render',
-			value: function render() {
-				return _react2.default.createElement(_AccountInputForm2.default, null);
-			}
-		}]);
-
-		return InputArea;
-	}(_react.Component);
-
-	exports.default = InputArea;
-
-/***/ },
 /* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -22195,9 +22250,9 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _AccountSubmitButton = __webpack_require__(200);
+	var _reactRedux = __webpack_require__(168);
 
-	var _AccountSubmitButton2 = _interopRequireDefault(_AccountSubmitButton);
+	var _actions = __webpack_require__(192);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22213,26 +22268,69 @@
 		function AccountInputForm(props) {
 			_classCallCheck(this, AccountInputForm);
 
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(AccountInputForm).call(this, props));
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AccountInputForm).call(this, props));
+
+			_this.createAccount = _this.createAccount.bind(_this);
+			return _this;
 		}
 
 		_createClass(AccountInputForm, [{
+			key: 'createAccount',
+			value: function createAccount() {
+				$.ajax({
+					type: "POST",
+					url: 'http://localhost:3000/create-account',
+					data: { username: givenUsername, givenPassword: givenPassword },
+					success: function success(data) {
+						var givenUsername = $('input[name=username]').val();
+						var givenPassword = $('input[name=password]').val();
+
+						console.log(givenUsername);
+						console.log(givenPassword);
+						console.log('sent account info!');
+					}
+				});
+			}
+		}, {
 			key: 'render',
 			value: function render() {
+				var _this2 = this;
+
 				return _react2.default.createElement(
 					'form',
-					{ className: 'account-input-form', action: '/create-account' },
+					{ className: 'account-input-form' },
 					'Username: ',
 					_react2.default.createElement('input', { type: 'text', name: 'username' }),
 					'Password: ',
 					_react2.default.createElement('input', { type: 'text', name: 'password' }),
-					_react2.default.createElement(_AccountSubmitButton2.default, { buttonAction: 'Create Account' })
+					_react2.default.createElement(
+						'button',
+						{ onClick: function onClick() {
+								_this2.createAccount();
+							} },
+						'Test'
+					),
+					_react2.default.createElement(
+						'p',
+						null,
+						$('input[name=username]').val()
+					)
 				);
 			}
 		}]);
 
 		return AccountInputForm;
 	}(_react.Component);
+
+	// const mapDispatchToProps = (dispatch) => {
+	// 	return {
+	// 		createAccount: (username, password) => {
+	// 			store.dispatch(asyncUpdateLeaderboard(username, password))
+	// 		}
+	// 	}
+	// }
+
+	// export default connect(mapDispatchToProps)(AccountInputForm)
 
 	// $('form').submit(function (event) {
 	// 	// Stop form from submitting normally
@@ -22250,96 +22348,6 @@
 
 
 	exports.default = AccountInputForm;
-
-/***/ },
-/* 198 */,
-/* 199 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	exports.default = tableHandler;
-
-	var _redux = __webpack_require__(175);
-
-	var _actions = __webpack_require__(191);
-
-	function tableHandler() {
-		var state = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
-		var action = arguments[1];
-
-		switch (action.type) {
-			case _actions.INITIALIZE_LEADERBOARD:
-				return Object.assign({}, state, { leaderboard: action.leaderboard });
-			case _actions.UPDATE_LEADERBOARD:
-				return Object.assign({}, state, { leaderboard: state.leaderboard.concat(action.leaderboard) });
-			case _actions.GET_LEADERBOARD:
-			case _actions.RECIEVE_LEADERBOARD:
-				return Object.assign({}, state, { isFetching: action.isFetching });
-			default:
-				return state;
-		}
-	}
-
-	// const trackerApp = combineReducers({
-	// 	tableHandler
-	// })
-
-	// export default trackerApp
-
-/***/ },
-/* 200 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var AccountSubmitButton = function (_Component) {
-		_inherits(AccountSubmitButton, _Component);
-
-		function AccountSubmitButton(props) {
-			_classCallCheck(this, AccountSubmitButton);
-
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(AccountSubmitButton).call(this, props));
-		}
-
-		_createClass(AccountSubmitButton, [{
-			key: 'render',
-			value: function render() {
-				var buttonAction = this.props.buttonAction;
-
-				return _react2.default.createElement(
-					'button',
-					{ className: 'account-submit-button', type: 'submit', value: 'Submit' },
-					buttonAction
-				);
-			}
-		}]);
-
-		return AccountSubmitButton;
-	}(_react.Component);
-
-	exports.default = AccountSubmitButton;
 
 /***/ }
 /******/ ]);

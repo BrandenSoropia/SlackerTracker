@@ -3,7 +3,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import Table from './Table'
-import InputArea from './InputArea'
+import AccountInputForm from './AccountInputForm'
 
 class App extends Component {
 	constructor(props) {
@@ -16,7 +16,7 @@ class App extends Component {
 			<div className='app'>
 			  <Table leaderboard={leaderboard} />
 			  <h1>IGNORE INPUT AREA, DOESN'T WORK</h1>
-			  <InputArea />
+			  <AccountInputForm />
 			</div>
 		)
 	}

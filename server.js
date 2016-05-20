@@ -3,14 +3,14 @@
 const MAX_LEADERBOARD_PLAYERS_TO_DISPLAY = 2
 
 const express = require('express')
-const app = express() 
+const app = express()
 const pgp = require('pg-promise')()
 
 var bodyParser = require('body-parser');
 var multer = require('multer'); // v1.0.5
 var upload = multer(); // for parsing multipart/form-data
 
-const PORT = 3000 
+const PORT = 3000
 const databaseConnection = 'postgres://localhost:5432/'
 
 const db = pgp(databaseConnection)
@@ -23,7 +23,7 @@ app.use(express.static('public'))
 function countTotalPlayers () {
 	db.one('SELECT COUNT(username) FROM player')
 	.then (function (totalPlayers) {
-		console.log(`Currently ${totalPlayers} users signed up`)
+		console.log(`Currently ${totalPlayers.count} users signed up`)
 		return totalPlayers
 	})
 	.catch (function (error) {
@@ -60,25 +60,28 @@ app.get('/get-leaderboard', (req, res, err) => {
 })
 
 app.post('/create-account', (req, res, err) => {
-	console.log('Create Account')
-	db.none('INSERT INTO player (pid, username, password) VALUES ((SELECT COUNT(username) FROM player), $1, $2)',
-		[req.query.username, req.query.password])
-	.then (function () {
-		console.log(`Created account for ${req.query.username}`)
-		displayNumPlayers(res, MAX_LEADERBOARD_PLAYERS_TO_DISPLAY)
-	})
-	.catch (function (error) {
-		console.log(error)
-	})
+	console.log(req)
+	// console.log('Create Account')
+	// db.none('INSERT INTO player (pid, username, password) VALUES ((SELECT COUNT(username) FROM player), $1, $2)',
+	// 	[req.query.username, req.query.password])
+	// .then (function () {
+	// 	console.log(`Created account for ${req.query.username}`)
+	// 	displayNumPlayers(res, MAX_LEADERBOARD_PLAYERS_TO_DISPLAY)
+	// })
+	// .catch (function (error) {
+	// 	console.log(error)
+	// })
 })
 
 app.post('/find-user', (req, res, err) => {
 	console.log('Find User')
-	db.one('SELECT username, highscore FROM player WHERE username=$1', [req.query.username])
+	console.log(req.body)
+	db.one('SELECT username, highscore FROM player WHERE username=$1', [req.body.username])
 	.then (function (foundUserInfo) {
 		res.json(foundUserInfo)
 	})
 	.catch (function (error) {
+		res.json(null)
 		console.log(error)
 	})
 })

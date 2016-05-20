@@ -8,9 +8,9 @@ export default class AccountSubmitButton extends Component {
 	}
 
 	render() {
-		let { buttonAction } = this.props
+		let { buttonAction, buttonText } = this.props
 		return (
-			<button className='account-submit-button' type="submit" value="Submit">{buttonAction}</button>
+			<button className='account-submit-button' onClick={buttonAction}>{buttonText}</button>
 		)
 	}
 }
